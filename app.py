@@ -1,17 +1,17 @@
 from transformers import pipeline
 import streamlit as st
 
-# Load Hugging Face models
+# Load Models with Explicit Model Names
 question_model = pipeline("text-generation", model="EleutherAI/gpt-neo-2.7B")
-sentiment_model = pipeline("sentiment-analysis")
+sentiment_model = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 
-# Function to generate interview questions
+# Generate Interview Question
 def generate_question(field="software development"):
     prompt = f"Generate an interview question for {field}."
-    question = question_model(prompt, max_length=50, num_return_sequences=1)[0]['generated_text']
+    question = question_model(prompt, max_length=50, num_return_sequences=1, truncation=True)[0]['generated_text']
     return question
 
-# Function to analyze the answer sentiment
+# Analyze Answer Sentiment
 def analyze_answer(answer):
     result = sentiment_model(answer)
     sentiment = result[0]['label']
@@ -19,7 +19,7 @@ def analyze_answer(answer):
     feedback = f"Your answer is {sentiment.lower()} with a confidence of {confidence:.2f}."
     return feedback
 
-# Streamlit interface for the app
+# Streamlit Interface
 def interview_app():
     st.title("Job Interview Preparation Assistant")
     st.write("Practice interview questions and receive AI-generated feedback!")
